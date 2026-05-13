@@ -5,6 +5,24 @@
 - **Guwa** = 瓜子（Gua Zi）+ 开发者 ID GTLX
 - **3L** = Three-Layer Architecture（三层架构）
 
+GitHub: https://github.com/gtlx/Guwa-3L
+
+---
+
+## 安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/gtlx/Guwa-3L.git
+cd Guwa-3L
+
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+```
+
 ---
 
 ## 项目结构
@@ -158,6 +176,24 @@ blog/
 
 ---
 
+## 根目录说明
+
+| 目录/文件 | 说明 |
+|---|---|
+| `public/` | 静态资源目录（**直接复制到构建输出，不经过编译**）。存放 favicon、robots.txt、图片等不需要处理的文件。构建后这些文件会在网站根目录可访问，如 `/favicon.ico` |
+| `scripts/` | 工具脚本目录。`new-post.js` 是 `pnpm write` 命令使用的新建文章脚本 |
+| `config/app/` | **应用配置层**（用户日常修改的配置）。包含站点标题、导航、个人资料、主题色等业务配置 |
+| `astro.config.mjs` | **框架配置**（不建议修改）。Astro 核心配置，包含插件、Markdown 处理、构建配置等 |
+| `svelte.config.js` | **框架配置**（不建议修改）。Svelte 组件集成配置 |
+| `tailwind.config.cjs` | **框架配置**（不建议修改）。Tailwind CSS 配置 |
+| `postcss.config.mjs` | **框架配置**（不建议修改）。PostCSS 处理配置 |
+| `tsconfig.json` | **框架配置**（不建议修改）。TypeScript 配置（包含路径别名）|
+| `pagefind.yml` | **工具配置**（可选修改）。Pagefind 站内搜索工具配置。`pnpm build` 后会自动生成搜索索引 |
+| `biome.json` | **工具配置**（可选修改）。Biome 代码格式化和 lint 工具配置。用于 `pnpm format` 和 `pnpm lint` 命令 |
+| `package.json` | 依赖和脚本配置 |
+
+---
+
 ## 常用命令
 
 | 命令 | 说明 |
@@ -191,6 +227,28 @@ pnpm write my-new-post
 ### 4. 修改个人资料
 
 编辑 `config/app/profile.ts` 修改头像、名称、简介、社交链接。
+
+---
+
+## 文章格式
+
+新建的 Markdown 文件需要以下 frontmatter：
+
+```yaml
+---
+title: 文章标题
+published: 2026-05-13
+updated: 2026-05-14  # 可选，更新日期
+description: 文章描述  # 可选，SEO 描述
+image: /images/cover.jpg  # 可选，封面图
+tags: ["标签1", "标签2"]  # 可选，文章标签
+category: "分类名"  # 可选，文章分类
+draft: false  # 可选，是否为草稿（true 则不发布）
+lang: zh_CN  # 可选，文章语言
+---
+
+文章内容...
+```
 
 ---
 
