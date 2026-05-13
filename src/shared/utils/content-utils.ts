@@ -112,3 +112,19 @@ export async function getCategoryList(): Promise<Category[]> {
 	}
 	return ret;
 }
+
+import fs from "node:fs";
+
+export function getImageBasePath(entryId: string): string {
+	const slashIdx = entryId.lastIndexOf("/");
+	if (slashIdx >= 0) {
+		return `blog/posts/${entryId.substring(0, slashIdx + 1)}`;
+	}
+	try {
+		const entries = fs.readdirSync(`./blog/posts/${entryId}`);
+		if (entries.some((e) => /^index\.(md|mdx)$/.test(e))) {
+			return `blog/posts/${entryId}/`;
+		}
+	} catch {}
+	return "blog/posts/";
+}
