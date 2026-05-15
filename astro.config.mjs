@@ -28,6 +28,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
+	publicDir: "blog/assets/public",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({

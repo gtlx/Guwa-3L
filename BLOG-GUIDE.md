@@ -130,12 +130,63 @@ links: [
 
 ```bash
 pnpm dev          # 启动开发服务器
+## 搜索用的是 Pagefind，它是构建时静态索引，dev 模式下不可用。只有构建以后才可以正常搜索。
 pnpm build        # 构建静态站点
 pnpm preview      # 预览构建结果
 ```
+
+## 部署到 Cloudflare Pages
+
+| 字段 | 值 |
+|------|-----|
+| 框架预设 | None（或 Astro） |
+| 根目录 | 空（默认 `/`） |
+| 构建命令 | `pnpm build` |
+| 构建输出目录 | `dist` |
+| 环境变量 | 无需添加 |
+
+**注意事项：**
+
+- 私有 GitHub 仓库也可以用，Cloudflare 授权后即可读取
+- 部署后需修改 `astro.config.mjs` 中的 `site` 字段为你的 Cloudflare Pages 域名（默认是 `https://fuwari.vercel.app/`），否则 RSS/Sitemap 链接不对
+- 项目没有 `@astrojs/cloudflare` 适配器，走的是纯静态 SSG 输出，Cloudflare Pages 直接托管无需额外配置
 
 ## 注意事项
 
 - 文章文件头 `draft: true` 时不会显示在正式构建中（dev 模式仍可见）
 - 封面图文件不存在时，页面不会报错，只是不显示图片
 - 默认头像图片路径 `assets/images/demo-avatar.png`，可以替换为自己的头像
+
+## 已知问题
+
+### ImageWrapper 隐式 CSS 依赖
+
+**问题**：`src/shared/components/misc/ImageWrapper.astro` 的 `import.meta.glob` 原使用 `"../../**"` 扫描所有文件。这有一个副作用——`src/shared/styles/` 下的 CSS 文件被 glob 顺带加载，其中的 Tailwind `@apply` 指令跨文件引用（如 `markdown.css` 引用 `main.css` 的 `.link` 类）才能正常工作。
+
+当 glob 限定为只扫图片后，这些 CSS 不再被加载，构建报错 `The 'link' class does not exist`。
+
+**解决**：将跨文件引用的自定义类展开内联，消除依赖。以 `markdown.css` 为例，原来：
+
+```css
+@apply relative bg-none link font-medium ...;
+@apply btn-regular-dark opacity-0 ...;
+```
+
+改为展开后的 Tailwind 工具类：
+
+```css
+@apply relative bg-none transition rounded-md p-1 -m-1 ... font-medium ...;
+@apply flex items-center justify-center bg-[oklch(0.45_0.01_var(--hue))] ... opacity-0 ...;
+```
+
+同时 CSS 文件在 `Layout.astro` 中显式逐条导入，不再依赖 glob 的副作用。
+
+### Public 目录迁移
+
+`public/` 内容移至 `blog/assets/public/`，在 `astro.config.mjs` 中配置：
+
+```js
+publicDir: "blog/assets/public",
+```
+
+无需根目录保留 `public/`，静态资源统一放在 `blog/assets/public/` 下。
