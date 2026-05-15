@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import PostCard from "@features/posts/PostCard.astro";
+import { getPostUrlBySlug } from "@shared/utils/url-utils";
+import type { CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+	const allPosts = await getCollection("posts");
+	const categories = [
+		...new Set(
+			allPosts
+				.map((p) => p.data.category)
+				.filter((c): c is string => !!c && c.trim() !== ""),
+		),
+	];
+	return categories.map((cat) => ({
+		params: { name: cat.trim() },
+		props: { category: cat.trim() },
+	}));
+}
+
+const { category } = Astro.props;
+const allPosts = await getCollection("posts");
+const filteredPosts = allPosts
+	.filter((p) => p.data.category === category)
+	.sort((a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime());
+---
+
+<MainGridLayout title={category}>
+	<div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
+		{filteredPosts.map((entry: CollectionEntry<"posts">) => (
+			<PostCard
+				entry={entry}
+				title={entry.data.title}
+				tags={entry.data.tags}
+				category={entry.data.category}
+				published={entry.data.published}
+				updated={entry.data.updated}
+				url={getPostUrlBySlug(entry.id)}
+				image={entry.data.image}
+				description={entry.data.description}
+				draft={entry.data.draft}
+				class:list="onload-animation"
+			/>
+		))}
+	</div>
+</MainGridLayout>

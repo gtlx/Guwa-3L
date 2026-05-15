@@ -2,7 +2,7 @@ import type { AstroIntegration } from "@swup/astro";
 
 declare global {
 	interface Window {
-		// type from '@swup/astro' is incorrect
+		// '@swup/astro' 的类型定义有误
 		swup: AstroIntegration;
 		pagefind: {
 			search: (query: string) => Promise<{

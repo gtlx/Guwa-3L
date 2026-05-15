@@ -17,7 +17,7 @@ export function parseDirectiveNode() {
 					node.children[0].data &&
 					node.children[0].data.directiveLabel
 				) {
-					// Add a flag to the node to indicate that it has a directive label
+					// 给节点添加标记，表示它包含指令标签
 					node.attributes["has-directive-label"] = true;
 				}
 				const hast = h(node.name, node.attributes);

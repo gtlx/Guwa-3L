@@ -10,8 +10,26 @@ interface Props {
 const links = Astro.props.links;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
-    {links.map((link) => (
-        <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+    {links.map((link) => {
+        if (link.children) {
+            return <>
+                <div class="flex items-center py-2 pl-3 pr-1 rounded-lg gap-8">
+                    <div class="transition text-black/75 dark:text-white/75 font-bold text-sm">
+                        {link.name}
+                    </div>
+                </div>
+                {link.children.map((c) => (
+                    <a href={url(c.url)} class="group flex justify-between items-center py-1.5 pl-8 pr-3 rounded-lg gap-8
+                        hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition text-sm
+                    ">
+                        <div class="transition text-black/60 dark:text-white/60 group-hover:text-[var(--primary)]">
+                            {c.name}
+                        </div>
+                    </a>
+                ))}
+            </>;
+        }
+        return <a href={link.external ? link.url : url(link.url!)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
             hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
         "
            target={link.external ? "_blank" : null}
@@ -27,6 +45,6 @@ const links = Astro.props.links;
                   class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
             >
             </Icon>}
-        </a>
-    ))}
+        </a>;
+    })}
 </div>

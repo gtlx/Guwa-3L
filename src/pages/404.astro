@@ -1,0 +1,64 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<MainGridLayout title="404">
+	<div class="relative flex min-h-[65vh] flex-col items-center justify-center overflow-hidden text-center">
+		<!-- background decoration -->
+		<div class="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.03]" aria-hidden="true">
+			<div class="absolute inset-0" style="background-image: linear-gradient(rgba(0,0,0,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.5) 1px,transparent 1px);background-size:64px 64px"></div>
+		</div>
+
+		<div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+			<div class="floating-blob absolute -left-16 -top-16 h-72 w-72 rounded-full bg-[var(--primary)] opacity-[0.04] blur-3xl dark:opacity-[0.06]"></div>
+			<div class="floating-blob animation-delay-2000 absolute bottom-12 right-8 h-56 w-56 rounded-full bg-pink-400 opacity-[0.03] blur-3xl dark:opacity-[0.05]"></div>
+			<div class="floating-blob animation-delay-4000 absolute left-1/3 top-1/3 h-40 w-40 rounded-full bg-sky-400 opacity-[0.03] blur-3xl dark:opacity-[0.04]"></div>
+		</div>
+
+		<h1 class="text-[clamp(6rem,20vw,12rem)] font-black leading-none tracking-tighter text-[var(--primary)] opacity-[0.12] dark:opacity-[0.15]">
+			404
+		</h1>
+
+		<p id="message" class="mt-2 text-xl text-75 md:text-2xl">页面离家出走了</p>
+
+		<a href="/" class="btn-regular mt-10 gap-2 rounded-xl px-6 py-3 text-base">
+			<Icon name="material-symbols:arrow-back" class="text-lg" />
+			返回首页
+		</a>
+	</div>
+</MainGridLayout>
+
+<style is:global>
+	.floating-blob {
+		animation: floatBlob 12s ease-in-out infinite;
+	}
+	.animation-delay-2000 {
+		animation-delay: 2s;
+	}
+	.animation-delay-4000 {
+		animation-delay: 4s;
+	}
+	@keyframes floatBlob {
+		0%, 100% { transform: translate(0, 0) scale(1); }
+		25% { transform: translate(15px, -20px) scale(1.05); }
+		50% { transform: translate(-10px, 10px) scale(0.95); }
+		75% { transform: translate(20px, 15px) scale(1.02); }
+	}
+</style>
+
+<script>
+	document.getElementById("message").textContent =
+		[
+			"页面离家出走了",
+			"找不到，但也不重要对吧",
+			"你再刷新一下说不定就有了",
+			"这页摸鱼去了",
+			"页面被外星人劫持了",
+			"可能是猫踩到键盘删掉的",
+			"页面的征途是星辰大海——只是还没出发",
+			"404：页面的隐形斗篷穿得太好了",
+			"这里什么也没有，除了这个梗",
+			"要不你随便点个别的链接？",
+		][Math.floor(Math.random() * 10)];
+</script>

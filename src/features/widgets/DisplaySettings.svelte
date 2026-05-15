@@ -52,7 +52,7 @@ $: if (hue || hue === 0) {
         background-image var(--color-selection-bar)
         transition background-image 0.15s ease-in-out
 
-        /* Input Thumb */
+        /* 滑块拇指 */
         &::-webkit-slider-thumb
           -webkit-appearance none
           height 1rem

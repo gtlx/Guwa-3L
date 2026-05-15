@@ -124,9 +124,8 @@ class TableOfContents extends HTMLElement {
     };
 
     scrollToActiveHeading = () => {
-        // If the TOC widget can accommodate both the topmost
-        // and bottommost items, scroll to the topmost item. 
-        // Otherwise, scroll to the bottommost one.
+        // 如果 TOC 可以同时容纳最顶部和最底部的条目，则滚动到最顶部
+        // 否则滚动到最底部
 
         if (this.anchorNavTarget || !this.tocEl) return;
         const activeHeading =
@@ -201,7 +200,7 @@ class TableOfContents extends HTMLElement {
     };
 
     connectedCallback() {
-        // wait for the onload animation to finish, which makes the `getBoundingClientRect` return correct values
+        // 等待加载动画完成，使 getBoundingClientRect 返回正确的值
         const element = document.querySelector('.prose');
         if (element) {
             element.addEventListener('animationend', () => {

@@ -1,4 +1,4 @@
-/* utils */
+/* 工具函数 */
 white(a)
   rgba(255, 255, 255, a)
 
@@ -12,7 +12,7 @@ rainbow-dark = linear-gradient(to right, oklch(0.70 0.10 0), oklch(0.70 0.10 30)
   --radius-large 1rem
   --content-delay 150ms
 
-/* An util to define variables that vary with light and dark mode */
+/* 用于定义随明暗模式变化的变量 */
 define(vars)
   :root
     for key, value in vars
