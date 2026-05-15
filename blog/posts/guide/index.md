@@ -12,13 +12,13 @@ draft: false
 
 This blog template is built with [Astro](https://astro.build/). For the things that are not mentioned in this guide, you may find the answers in the [Astro Docs](https://docs.astro.build/).
 
-## Front-matter of Posts
+## 文章 Front-matter
 
 ```yaml
 ---
 title: My First Blog Post
 published: 2023-09-09
-description: This is the first post of my new Astro blog.
+description: 这是我的第一篇博客文章
 image: ./cover.jpg
 tags: [Foo, Bar]
 category: Front-end
@@ -26,21 +26,19 @@ draft: false
 ---
 ```
 
-| Attribute     | Description                                                                                                                                                                                                 |
-|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `title`       | The title of the post.                                                                                                                                                                                      |
-| `published`   | The date the post was published.                                                                                                                                                                            |
-| `description` | A short description of the post. Displayed on index page.                                                                                                                                                   |
-| `image`       | The cover image path of the post.<br/>1. Start with `http://` or `https://`: Use web image<br/>2. Start with `/`: For image in `public` dir<br/>3. With none of the prefixes: Relative to the markdown file |
-| `tags`        | The tags of the post.                                                                                                                                                                                       |
-| `category`    | The category of the post.                                                                                                                                                                                   |
-| `draft`        | If this post is still a draft, which won't be displayed.                                                                                                                                                    |
+| 字段          | 说明                                                                                                                              |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `title`       | 文章标题                                                                                                                          |
+| `published`   | 发布日期                                                                                                                          |
+| `description` | 文章摘要，显示在首页列表                                                                                                          |
+| `image`       | 文章封面图路径<br/>1. 以 `http://` 或 `https://` 开头：使用网络图片<br/>2. 以 `/` 开头：使用 `public` 目录下的图片<br/>3. 其他：相对于 markdown 文件所在目录 |
+| `tags`        | 文章标签                                                                                                                          |
+| `category`    | 文章分类                                                                                                                          |
+| `draft`       | 是否为草稿，草稿不会显示在页面上                                                                                                  |
 
-## Where to Place the Post Files
+## 存放文章文件
 
-
-
-Your post files should be placed in `blog/posts/` directory. You can also create sub-directories to better organize your posts and assets.
+文章文件应放在 `blog/posts/` 目录下，可以使用子目录来组织文章和资源。
 
 ```
 blog/posts/
@@ -49,3 +47,31 @@ blog/posts/
     ├── cover.png
     └── index.md
 ```
+
+## 自定义页面（关于、友链等）
+
+创建独立页面（如关于页、友链页）：
+
+1. 在 `blog/spec/` 下创建 markdown 文件，如 `blog/spec/links.md`
+2. 在 `src/pages/` 下创建路由页面 `src/pages/links.astro`：
+
+```astro
+---
+import { getEntry, render } from "astro:content";
+import Markdown from "@shared/components/misc/Markdown.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+
+const entry = await getEntry("spec", "links");
+if (!entry) throw new Error("Page not found");
+const { Content } = await render(entry);
+---
+<MainGridLayout title="友链" description="友情链接">
+    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full">
+            <Markdown class="mt-2"><Content /></Markdown>
+        </div>
+    </div>
+</MainGridLayout>
+```
+
+3. 在 `blog/spec/links.md` 中写内容，页面会生成在 `/links/`

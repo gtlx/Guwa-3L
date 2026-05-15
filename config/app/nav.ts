@@ -7,9 +7,9 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.About,
 		{
-			name: "GitHub",
-			url: "https://github.com/saicaca/fuwari",
-			external: true,
+			name: "友链",
+			url: "/links/",
+			external: false,
 		},
 	],
 };
