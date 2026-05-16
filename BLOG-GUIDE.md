@@ -230,6 +230,23 @@ pnpm preview      # 预览构建结果
 - 封面图文件不存在时，页面不会报错，只是不显示图片
 - 默认头像路径 `/images/demo-avatar.png`，放于 `blog/assets/public/images/`，可替换为自己的头像
 
+## 评论系统
+
+本主题预留了评论系统框架接口，支持接入第三方评论服务（如 Artalk、Waline 等）。
+
+### 框架接口
+
+- `src/features/comments/CommentSystem.astro` — 评论组件，接入点在 `<script>` 中的注释处
+- `config/app/site.ts` — `comment.enable` 开关
+- 启用后页面会渲染 `#comment-container` 容器，客户端脚本在其中初始化评论服务
+
+### 接入步骤
+
+1. 安装对应评论系统的 npm 包（如 `pnpm add artalk`）
+2. 修改 `src/features/comments/CommentSystem.astro` 中的脚本，初始化评论客户端
+3. 在 `config/app/site.ts` 中设置 `comment.enable: true`
+4. 部署评论服务端（参见对应评论系统的文档）
+
 ## 已知问题
 
 ### 首页横幅轮播

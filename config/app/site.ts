@@ -26,4 +26,8 @@ export const siteConfig: SiteConfig = {
 	// footer: {
 	// 	extra: '京ICP备xxxxxxx号', // 底部附加信息（备案号等）
 	// },
+
+	comment: {
+		enable: false,
+	},
 };

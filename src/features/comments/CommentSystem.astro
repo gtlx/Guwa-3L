@@ -1,0 +1,21 @@
+---
+import { siteConfig } from "@/config";
+
+const { enable } = siteConfig.comment || {};
+---
+
+{enable && <div id="comment-container"></div>}
+
+{!enable && (
+	<p class="text-50 text-sm text-center">评论功能未启用</p>
+)}
+
+<script>
+	(function() {
+		const el = document.getElementById("comment-container");
+		if (!el) return;
+
+		// 在此接入评论系统客户端脚本
+		// 见 BLOG-GUIDE.md 中的说明
+	})();
+</script>

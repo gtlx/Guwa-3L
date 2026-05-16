@@ -38,6 +38,10 @@ export type SiteConfig = {
 	footer?: {
 		extra?: string;
 	};
+
+	comment?: {
+		enable: boolean;
+	};
 };
 
 export type Favicon = {
