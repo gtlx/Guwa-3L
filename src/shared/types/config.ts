@@ -20,7 +20,7 @@ export type SiteConfig = {
 	};
 	banner: {
 		enable: boolean;
-		src: string;
+		images?: string[];
 		position?: "top" | "center" | "bottom";
 		credit: {
 			enable: boolean;
@@ -34,6 +34,10 @@ export type SiteConfig = {
 	};
 
 	favicon: Favicon[];
+
+	footer?: {
+		extra?: string;
+	};
 };
 
 export type Favicon = {

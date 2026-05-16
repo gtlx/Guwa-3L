@@ -232,6 +232,30 @@ pnpm preview      # 预览构建结果
 
 ## 已知问题
 
+### 首页横幅轮播
+
+首页大图支持多图轮播。图片放入 `blog/assets/public/banner/` 即可自动识别，无需配置。
+
+**尺寸建议**：
+- 宽高比 **3:1 ~ 4:1**（如 1920×640 或 1600×400）
+- 横向分辨率不低于 **1600px**
+- 所有图片尽量保持相同尺寸，避免切换时布局跳动
+- 支持格式：jpg / png / webp / avif
+
+**交互**：
+- 自动 5 秒切换
+- 鼠标悬停暂停
+- 左右箭头手动翻页
+- 底部圆点选择指定页
+
+**覆写配置**：如需手动指定轮播图列表（而非自动扫描目录），可在 `config/app/site.ts` 中添加：
+```ts
+banner: {
+  enable: true,
+  images: ["/banner/1.jpg", "/banner/2.jpg"],
+}
+```
+
 ### ImageWrapper 隐式 CSS 依赖
 
 **问题**：`src/shared/components/misc/ImageWrapper.astro` 的 `import.meta.glob` 原使用 `"../../**"` 扫描所有文件。这有一个副作用——`src/shared/styles/` 下的 CSS 文件被 glob 顺带加载，其中的 Tailwind `@apply` 指令跨文件引用（如 `markdown.css` 引用 `main.css` 的 `.link` 类）才能正常工作。
