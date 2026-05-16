@@ -1,0 +1,19 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	href?: string;
+	class?: string;
+}
+const { href = "/" } = Astro.props;
+const className = Astro.props.class;
+---
+
+<a href={href} onclick="history.back(); return false"
+	class:list={["absolute top-5 right-5 z-20 btn-regular w-[3.25rem] h-[3.25rem] rounded-xl bg-[var(--enter-btn-bg)] hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95 flex items-center justify-center onload-animation", className]}
+	aria-label="返回"
+>
+	<Icon name="material-symbols:chevron-left-rounded"
+		class="transition text-[var(--primary)] text-4xl mx-auto">
+	</Icon>
+</a>
