@@ -41,11 +41,13 @@ let links: NavBarLink[] = navBarConfig.links.map(
                                 <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-lg" />
                             </div>
                         </button>
-                        <div class="absolute top-full left-0 pt-2 hidden group-hover:block group-focus-within:block">
-                            <div class="card-base rounded-xl py-2 min-w-[8rem] shadow-xl">
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:block group-focus-within:block">
+                            <div class="card-base rounded-xl py-2 min-w-[8rem] shadow-xl text-center">
                                 {l.children.map((c) => (
                                     <a href={url(c.url)}
-                                       class="block px-4 py-2 text-sm whitespace-nowrap hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] rounded-lg mx-1"
+                                       class="block px-6 py-2.5 whitespace-nowrap text-black/75 dark:text-white/75 font-bold
+                                              hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)]
+                                              active:bg-[var(--btn-plain-bg-active)] rounded-lg mx-1"
                                     >
                                         {c.name}
                                     </a>
