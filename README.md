@@ -65,6 +65,7 @@ blog/
 │   │   ├── [...page].astro    # 首页分页
 │   │   ├── archive.astro      # 归档页
 │   │   ├── about.astro        # 关于页
+│   │   ├── 404.astro          # 404 页面
 │   │   ├── rss.xml.ts         # RSS 订阅
 │   │   ├── robots.txt.ts      # SEO 规则
 │   │   ├── category/            # 分类页面路由
@@ -87,6 +88,9 @@ blog/
 │   │   │
 │   │   ├── archive/           # 归档模块
 │   │   │   └── ArchivePanel.svelte # 归档面板
+│   │   │
+│   │   ├── comments/          # 评论模块
+│   │   │   └── CommentSystem.astro # 评论系统组件（预留接口）
 │   │   │
 │   │   └── widgets/           # 侧边栏小部件
 │   │       ├── SideBar.astro          # 侧边栏框架

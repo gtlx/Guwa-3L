@@ -169,9 +169,104 @@ export const profileConfig: ProfileConfig = {
 
 无需手动配置，写好文章后自动出现在归档中。
 
-## 文章目录嵌套
+## 扩展内容集合
 
-`blog/posts/` 支持无限层级的文件夹嵌套，任意子目录下的 `.md` 文件都会被识别为文章：
+本主题支持通过 Astro Content Collections 机制创建自定义内容集合（如设备记录、读书笔记等），不局限于文章。
+
+### 新建集合三步走
+
+以创建一个「读书笔记」集合为例：
+
+**第一步：在 `blog/` 下建目录，写 Markdown 文件**
+
+```
+blog/books/
+└── 示例笔记.md
+```
+
+文件 frontmatter 按需定义：
+
+```yaml
+---
+title: 《深入理解计算机系统》
+date: 2025-06-01
+description: 读书笔记
+tags: ["计算机"]
+---
+```
+
+**第二步：在 `src/content.config.ts` 中注册集合**
+
+参考 `posts` 集合的定义，复制一份改为你的集合名：
+
+```ts
+const booksCollection = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./blog/books",           // ← 指向你的目录
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    description: z.string().optional().default(""),
+    tags: z.array(z.string()).optional().default([]),
+  }),
+});
+
+export const collections = {
+  posts: postsCollection,           // 保留原有
+  spec: specCollection,
+  books: booksCollection,           // 新增
+};
+```
+
+`schema` 中的字段定义参考：
+
+| 写法 | 说明 |
+|------|------|
+| `z.string()` | 必填字符串 |
+| `z.string().optional()` | 可选字符串 |
+| `z.coerce.date()` | 日期（自动转换） |
+| `z.array(z.string()).optional().default([])` | 可选字符串数组 |
+| `.nullable()` | 允许 `null` |
+
+**第三步：创建归档页面**
+
+在 `src/pages/` 下新建路由，从集合中读取数据：
+
+```astro
+---
+import { getCollection } from "astro:content";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+
+const items = (await getCollection("books"))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+<MainGridLayout title="读书笔记">
+  <div class="card-base z-10 px-9 py-6 relative w-full">
+    <div class="flex flex-col gap-4">
+      {items.map((entry) => (
+        <div class="border-b border-dashed ...">
+          <div class="font-bold">{entry.data.title}</div>
+          <div class="text-sm text-black/60">{entry.data.description}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</MainGridLayout>
+```
+
+具体样式参照主题内已有的页面（如 `src/pages/about.astro`、`src/pages/essays.astro`）。
+
+**可选：添加导航链接**
+
+在 `config/app/nav.ts` 中添加：
+
+```ts
+{ name: "读书", url: "/books/" },
+```
+
+## 文章目录嵌套
 
 ```
 blog/posts/
@@ -237,8 +332,27 @@ pnpm preview      # 预览构建结果
 ### 框架接口
 
 - `src/features/comments/CommentSystem.astro` — 评论组件，接入点在 `<script>` 中的注释处
-- `config/app/site.ts` — `comment.enable` 开关
+- `config/app/site.ts` — `comment.enable` 开关（默认仅此字段）
 - 启用后页面会渲染 `#comment-container` 容器，客户端脚本在其中初始化评论服务
+
+### 使用 Artalk 评论系统
+
+Artalk 需要额外配置 `serverUrl`（服务端地址）和 `site`（站点名），在 `config/app/site.ts` 中手动添加：
+
+```ts
+comment: {
+  enable: true,
+  serverUrl: "https://你的-artalk-服务器",
+  site: "你的站点名",  // 必需，需与 Artalk 后台创建的站点名一致
+}
+```
+
+> 类型定义 `src/shared/types/config.ts` 中 `comment` 默认只有 `enable` 字段，`serverUrl` 和 `site` 需自行补充到类型和配置中。
+
+`site` 参数不可省略，否则 Artalk 找不到对应站点导致评论加载失败。
+
+> **注意**：Artalk v2.9.1 构造函数参数名是 `server`，**不是 `serverURL`**。
+> 初始化时使用 `new Artalk({ server: "你的服务端地址", ... })`，配置文件中字段名可自定义。
 
 ### 接入步骤
 
