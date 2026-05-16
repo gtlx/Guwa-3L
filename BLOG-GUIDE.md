@@ -327,39 +327,132 @@ pnpm preview      # 预览构建结果
 
 ## 评论系统
 
-本主题预留了评论系统框架接口，支持接入第三方评论服务（如 Artalk、Waline 等）。
+本主题预留了评论系统框架接口（stub），不绑定任何特定服务。以下说明如何接入实际的评论系统。
 
-### 框架接口
+### 框架接口说明
 
-- `src/features/comments/CommentSystem.astro` — 评论组件，接入点在 `<script>` 中的注释处
-- `config/app/site.ts` — `comment.enable` 开关（默认仅此字段）
-- 启用后页面会渲染 `#comment-container` 容器，客户端脚本在其中初始化评论服务
+| 文件 | 作用 |
+|------|------|
+| `src/features/comments/CommentSystem.astro` | 评论组件（stub，需自行填充脚本） |
+| `config/app/site.ts` | 配置开关 `comment.enable` |
+| `src/shared/types/config.ts` | 类型定义（默认仅 `enable` 字段） |
 
-### 使用 Artalk 评论系统
+启用后页面渲染 `<div id="comment-container"></div>`，客户端脚本在其中初始化评论服务。
 
-Artalk 需要额外配置 `serverUrl`（服务端地址）和 `site`（站点名），在 `config/app/site.ts` 中手动添加：
+### 接入 Artalk（以 blog 项目为例）
+
+以下步骤参考 blog 项目的完整实现。
+
+#### 1. 安装依赖
+
+```bash
+pnpm add artalk
+```
+
+#### 2. 修改配置
+
+`config/app/site.ts` 中添加服务端地址和站点名：
 
 ```ts
 comment: {
   enable: true,
   serverUrl: "https://你的-artalk-服务器",
-  site: "你的站点名",  // 必需，需与 Artalk 后台创建的站点名一致
+  site: "你的站点名",  // 必需，与 Artalk 后台创建的站点名一致
 }
 ```
 
-> 类型定义 `src/shared/types/config.ts` 中 `comment` 默认只有 `enable` 字段，`serverUrl` 和 `site` 需自行补充到类型和配置中。
+同时补充类型 `src/shared/types/config.ts`：
 
-`site` 参数不可省略，否则 Artalk 找不到对应站点导致评论加载失败。
+```ts
+// 在 CommentConfig 接口中添加
+serverUrl?: string;
+site?: string;
+```
 
-> **注意**：Artalk v2.9.1 构造函数参数名是 `server`，**不是 `serverURL`**。
-> 初始化时使用 `new Artalk({ server: "你的服务端地址", ... })`，配置文件中字段名可自定义。
+#### 3. 显式导入 Artalk CSS
 
-### 接入步骤
+在 `src/features/layout/Layout.astro` 的 CSS import 区域添加：
 
-1. 安装对应评论系统的 npm 包（如 `pnpm add artalk`）
-2. 修改 `src/features/comments/CommentSystem.astro` 中的脚本，初始化评论客户端
-3. 在 `config/app/site.ts` 中设置 `comment.enable: true`
-4. 部署评论服务端（参见对应评论系统的文档）
+```astro
+import "artalk/dist/Artalk.css";
+```
+
+Artalk CSS 会与主题样式一起被打包进 `<head>`，顺序可控，主题样式可以覆盖之。
+
+#### 4. 替换 CommentSystem.astro
+
+将 `src/features/comments/CommentSystem.astro` 替换为以下完整实现：
+
+```astro
+---
+import { siteConfig } from "@/config";
+
+const { enable, serverUrl, site } = siteConfig.comment || {};
+const pageKey = Astro.url.pathname;
+---
+
+{enable && <div id="artalk-container" data-server={serverUrl} data-site={site} data-page-key={pageKey}></div>}
+
+{!enable && (
+	<p class="text-50 text-sm text-center">评论功能未启用</p>
+)}
+
+<script>
+import Artalk from "artalk";
+
+function bindThemeSync(at) {
+	const apply = () => {
+		const isDark = document.documentElement.classList.contains("dark");
+		at.setDarkMode(isDark);
+	};
+	apply();
+	const mo = new MutationObserver(apply);
+	mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+}
+
+function loadArtalk() {
+	const el = document.getElementById("artalk-container");
+	if (!el) return;
+	const at = new Artalk({
+		el,
+		server: el.getAttribute("data-server") || "",
+		site: el.getAttribute("data-site") || undefined,
+		pageKey: el.getAttribute("data-page-key") || undefined,
+		locale: "zh-CN",
+	});
+	bindThemeSync(at);
+}
+
+document.addEventListener("loadComment", loadArtalk);
+</script>
+```
+
+**注意**：
+- 使用 `data-` 属性传参，避免 `define:vars` 与 `import` 的兼容问题
+- 暗黑模式通过 `bindThemeSync` 自动同步
+
+#### 5. 处理 SPA 页面切换
+
+项目使用 `@swup/astro` 做无刷新导航。在 `MainGridLayout.astro` 的底部 script 中添加：
+
+```js
+function fireLoadComment() { document.dispatchEvent(new Event("loadComment")); }
+document.addEventListener("swup:contentReplaced", fireLoadComment);
+fireLoadComment();
+```
+
+页面切换后会自动触发 `loadComment` 事件，Artalk 重新挂载。
+
+#### 6. 部署服务端
+
+参考 [Artalk 官方文档](https://artalk.js.org/guide/deploy) 部署后端服务，注意配置 CORS 允许博客域名访问。
+
+### 接入其他评论系统
+
+参照上方结构：
+1. 安装对应 npm 包
+2. 在 `CommentSystem.astro` 的 `<script>` 中初始化客户端
+3. 在 `config/app/site.ts` 中添加所需配置字段及对应类型
 
 ## 已知问题
 
